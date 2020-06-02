@@ -1,0 +1,22 @@
+{
+  "name": "compose",
+  "version": "0.0.1",
+  "description": "Extend multiple classes",
+  "main": "compose.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "serve": "pnpx serve"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Anoesj/compose.git"
+  },
+  "author": "Anoesj Sadraee",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Anoesj/compose/issues"
+  },
+  "homepage": "https://github.com/Anoesj/compose#readme"
+}
