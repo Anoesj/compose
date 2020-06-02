@@ -31,6 +31,41 @@ const composedClassHandler = {
   },
 }
 
+class MagicProxy {
+  constructor () {
+    return new Proxy(this, {
+      get (target, property, receiver) {
+        if (receiver !== null) {
+          console.log('PROXY TO MAIN:', target.proxyToMain);
+          console.log('GET', { target, property, receiver });
+          return Reflect.get(target.proxyToMain, property, receiver);
+        }
+        return Reflect.get(...arguments);
+      },
+      set (target, property, value, receiver) {
+        console.log('SET', { target, property, value, receiver });
+        return Reflect.set(...arguments);
+      },
+    });
+  }
+}
+
+function proxyFactory (classDefinition) {
+  console.log(classDefinition.prototype);
+  class Proxified extends MagicProxy {}
+  // class Proxified {}
+
+  Object.defineProperties(Proxified.prototype, Object.getOwnPropertyDescriptors(classDefinition.prototype));
+
+  // for (const [propertyName, properyDescriptor] of Object.entries(Object.getOwnPropertyDescriptors(classDefinition.prototype))) {
+  //   console.log(propertyName, properyDescriptor);
+  //   Reflect.defineProperty(Proxi);
+  // }
+  console.log(Proxified.prototype);
+
+  return Proxified;
+}
+
 function compose (...parentClasses) {
   // Create class where class instances of parent classes are stored
   // The class instance will be wrapped in a Proxy, that gets properties
@@ -45,8 +80,9 @@ function compose (...parentClasses) {
       this.classInstances.push(
         ...(parentClasses.map((parentClass) => {
           console.log(`Going to construct %s`, parentClass.prototype.constructor.name);
-          parentClass.prototype.proxyToMain = proxy; // TODO: Temp
-          const instance = Reflect.construct(parentClass, args[parentClass.prototype.constructor.name] ?? []);
+          const proxifiedParentClass = proxyFactory(parentClass);
+          proxifiedParentClass.prototype.proxyToMain = proxy; // TODO: Temp
+          const instance = Reflect.construct(proxifiedParentClass, args[parentClass.prototype.constructor.name] ?? []);
           console.log(`Constructed %s`, parentClass.prototype.constructor.name, instance);
           return instance;
         }))

@@ -1,29 +1,7 @@
 import { compose } from '../compose.js';
 
-class ProxyToMain {
-  constructor () {
-    return new Proxy(this, {
-      get (target, property, receiver) {
-        if (receiver !== null) {
-          console.log('PROXY TO MAIN:', target.proxyToMain);
-          // target.proxyToMain
-          console.log('GET', { target, property, receiver });
-          return Reflect.get(target.proxyToMain, property, receiver);
-        }
-        return Reflect.get(...arguments);
-      },
-      set (target, property, value, receiver) {
-        console.log('SET', { target, property, value, receiver });
-        return Reflect.set(...arguments);
-      },
-    });
-  }
-}
-
-class Foo extends ProxyToMain {
+class Foo {
   constructor (name = '') {
-    super();
-    console.log(this.test);
     this.name = name;
 
     setTimeout(() => {
@@ -39,9 +17,8 @@ class Foo extends ProxyToMain {
   }
 }
 
-class Bar extends ProxyToMain {
+class Bar {
   constructor (bar = {}) {
-    super();
     console.log(this, bar);
     Object.assign(this, bar);
   }
@@ -55,6 +32,7 @@ class FooBar extends compose(Foo, Bar) {
   constructor () {
     super(...arguments);
     this.test = 'test';
+    console.log(this);
     this.fooMethod();
     this.barMethod();
     this.testAccessingParentProperty(); // 1
