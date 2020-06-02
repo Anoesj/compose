@@ -44,22 +44,9 @@ function compose (...parentClasses) {
 
       this.classInstances.push(
         ...(parentClasses.map((parentClass) => {
-          // Make a 'bound' copy of the parentClass
-          const newClass = class {};
-          for (const [propertyName, propertyDescriptor] of Object.entries(Object.getOwnPropertyDescriptors(parentClass.prototype))) {
-            // Bind value/get/set functions in propertyDescriptor
-            for (const propertyType of ['value', 'get', 'set']) {
-              if (propertyType in propertyDescriptor) {
-                propertyDescriptor.value = propertyDescriptor[propertyType].bind(proxy);
-              }
-            }
-
-            // Apply the propertyDescriptor to the newClass (which is bound copy of parentClass)
-            Reflect.defineProperty(newClass.prototype, propertyName, propertyDescriptor);
-          }
-          console.log(newClass.prototype);
           console.log(`Going to construct %s`, parentClass.prototype.constructor.name);
-          const instance = Reflect.construct(newClass, args[parentClass.prototype.constructor.name] ?? []);
+          parentClass.prototype.proxyToMain = proxy; // TODO: Temp
+          const instance = Reflect.construct(parentClass, args[parentClass.prototype.constructor.name] ?? []);
           console.log(`Constructed %s`, parentClass.prototype.constructor.name, instance);
           return instance;
         }))
@@ -72,7 +59,7 @@ function compose (...parentClasses) {
       for (const classInstance of this.classInstances) {
         if (Reflect.has(classInstance, propertyName)) {
           // console.log(`%cProperty “${propertyName}” exists on ${Reflect.getPrototypeOf(classInstance).constructor.name}.`, 'color: lightgrey;');
-          return Reflect.get(classInstance, propertyName);
+          return Reflect.get(classInstance, propertyName, null);
         }
       }
     }
