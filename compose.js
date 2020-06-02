@@ -1,12 +1,9 @@
 const composedClassHandler = {
   get (target, property, receiver) {
-    console.log({
-      target,
-      property,
-      receiver,
-    });
+    console.log(`%cGetting property “${property}” from ${Reflect.getPrototypeOf(target).constructor.name}.`, 'color: lightgrey;');
 
     if (Reflect.has(target, property)) {
+      console.log(`%cProperty “${property}” exists on ${Reflect.getPrototypeOf(target).constructor.name}.`, 'color: lightgrey;');
       return Reflect.get(...arguments);
     }
     else {
@@ -15,9 +12,10 @@ const composedClassHandler = {
   },
 
   getPrototypeOf (target) {
-    console.log(target);
-    return Reflect.getPrototypeOf(target);
-  }
+    const frankensteinPrototype = target.getPrototypes();
+    return frankensteinPrototype;
+    // return Reflect.getPrototypeOf(target);
+  },
 }
 
 function compose (...parentClasses) {
@@ -41,9 +39,32 @@ function compose (...parentClasses) {
     get (propertyName) {
       for (const classInstance of this.#classInstances) {
         if (Reflect.has(classInstance, propertyName)) {
+          console.log(`%cProperty “${propertyName}” exists on ${Reflect.getPrototypeOf(classInstance).constructor.name}.`, 'color: lightgrey;');
           return Reflect.get(classInstance, propertyName);
         }
       }
+    }
+
+    getPrototypes () {
+      return new Proxy(parentClasses[0], {
+        getPrototypeOf (target) {
+          console.warn('GETTING PROTOTYPE OF', target);
+          return parentClasses[1];
+        },
+      });
+      // return new Proxy(parentClasses[0], {
+      //   getPrototypeOf (target) {
+      //     console.warn('GETTING PROTOTYPE OF', target);
+      //     return parentClasses[1];
+      //   },
+      // });
+      // return parentClasses.reduce((total, curr) => {
+      //   return new Proxy(curr, {
+      //     getPrototypeOf (target) {
+      //       console.log('GETTING PROTOTYPE');
+      //     }
+      //   });
+      // });
     }
 
   };

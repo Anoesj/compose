@@ -1,6 +1,9 @@
+import { compose } from '../compose.js';
+
 class Foo {
   constructor (name = '') {
     this.name = name;
+    this.testAccessingParentProperty();
 
     setTimeout(() => {
       this.name = 'Quentin Tarantino';
@@ -8,6 +11,9 @@ class Foo {
   }
   fooMethod () {
     console.log(`Yo, I'm ${this.name}`);
+  }
+  testAccessingParentProperty () {
+    console.log(this.test);
   }
 }
 
@@ -26,10 +32,15 @@ class FooBar extends compose(Foo, Bar) {
     this.test = 'test';
     this.fooMethod();
     this.barMethod();
+    // this.testAccessingParentProperty();
+
+    setTimeout(() => {
+      this.fooMethod();
+    }, 2000);
   }
 }
 
-new FooBar({
+const foobar = new FooBar({
   Foo: ['Jules Winnfield'],
   Bar: [
     {
@@ -38,3 +49,23 @@ new FooBar({
     },
   ],
 });
+
+console.log(foobar);
+
+console.log(`instanceof FooBar? ––>`, foobar instanceof FooBar);
+console.log(`instanceof Foo? ––>`, foobar instanceof Foo);
+console.log(`instanceof Bar? ––>`, foobar instanceof Bar);
+
+// customElements.define('test-element', class TestElement extends compose(HTMLElement, Bar) {
+//   constructor () {
+//     super(...arguments);
+//     this.test = 'test';
+//     this.fooMethod();
+//     this.barMethod();
+//     // this.testAccessingParentProperty();
+
+//     setTimeout(() => {
+//       this.fooMethod();
+//     }, 2000);
+//   }
+// });

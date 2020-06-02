@@ -7,7 +7,7 @@
     "example": "example"
   },
   "scripts": {
-    "serve": "pnpx serve"
+    "serve": "pnpx browser-sync . -w --startPath '/example' --logLevel 'warn'"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/Anoesj/compose/issues"
   },
-  "homepage": "https://github.com/Anoesj/compose#readme"
+  "homepage": "https://github.com/Anoesj/compose#readme",
+  "devDependencies": {
+    "browser-sync": "^2.26.7"
+  }
 }
