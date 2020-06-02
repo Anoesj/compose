@@ -5,9 +5,9 @@ class Foo {
     this.name = name;
     this.testAccessingParentProperty();
 
-    setTimeout(() => {
-      this.name = 'Quentin Tarantino';
-    }, 1000);
+    // setTimeout(() => {
+    //   this.name = 'Quentin Tarantino';
+    // }, 1000);
   }
   fooMethod () {
     console.log(`Yo, I'm ${this.name}`);
@@ -32,11 +32,11 @@ class FooBar extends compose(Foo, Bar) {
     this.test = 'test';
     this.fooMethod();
     this.barMethod();
-    // this.testAccessingParentProperty();
+    this.testAccessingParentProperty();
 
-    setTimeout(() => {
-      this.fooMethod();
-    }, 2000);
+    // setTimeout(() => {
+    //   this.fooMethod();
+    // }, 2000);
   }
 }
 

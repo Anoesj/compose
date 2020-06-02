@@ -12,8 +12,21 @@ const composedClassHandler = {
   },
 
   getPrototypeOf (target) {
+    // Goal: mimic the prototype chain of all involved classes extending each other
+    // by returning multiple layers of Proxy's with getPrototypeOf traps.
     const frankensteinPrototype = target.getPrototypes();
-    return frankensteinPrototype;
+
+    console.log(target, frankensteinPrototype, Reflect.getPrototypeOf(target));
+
+    // return frankensteinPrototype;
+
+    const frankensteinProxy = new Proxy(Reflect.getPrototypeOf(target), {
+      getPrototypeOf (target) {
+        return frankensteinPrototype;
+      },
+    });
+    console.log(frankensteinProxy);
+    return frankensteinProxy;
     // return Reflect.getPrototypeOf(target);
   },
 }
@@ -48,7 +61,7 @@ function compose (...parentClasses) {
     getPrototypes () {
       return new Proxy(parentClasses[0], {
         getPrototypeOf (target) {
-          console.warn('GETTING PROTOTYPE OF', target);
+          console.warn('GETTING PROTOTYPE OF', target.prototype.constructor.name);
           return parentClasses[1];
         },
       });
