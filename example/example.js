@@ -2,26 +2,30 @@ import { compose } from '../compose.js';
 
 class Foo {
   constructor (name = '') {
+    console.log(this);
     this.name = name;
-    this.testAccessingParentProperty();
 
-    // setTimeout(() => {
-    //   this.name = 'Quentin Tarantino';
-    // }, 1000);
+    setTimeout(() => {
+      this.testAccessingParentProperty(); // 2
+      this.name = 'Quentin Tarantino';
+    }, 1000);
   }
   fooMethod () {
     console.log(`Yo, I'm ${this.name}`);
   }
   testAccessingParentProperty () {
+    console.log(this);
     console.log(this.test);
   }
 }
 
 class Bar {
   constructor (bar = {}) {
+    console.log(this, bar);
     Object.assign(this, bar);
   }
   barMethod () {
+    console.log(this.people);
     console.log(`${this.people.join(' and ')} went to ${this.name}`);
   }
 }
@@ -32,11 +36,11 @@ class FooBar extends compose(Foo, Bar) {
     this.test = 'test';
     this.fooMethod();
     this.barMethod();
-    this.testAccessingParentProperty();
+    this.testAccessingParentProperty(); // 1
 
-    // setTimeout(() => {
-    //   this.fooMethod();
-    // }, 2000);
+    setTimeout(() => {
+      this.fooMethod();
+    }, 2000);
   }
 }
 
